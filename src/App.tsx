@@ -1,34 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from 'react'
+import TodoItem from './components/TodoItem'
+import AddTodo from './components/AddTodo'
+import { getTodos, addTodo, updateTodo, deleteTodo } from './API'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const [todos, setTodos] = useState<ITodo[]>([])
+
+  useEffect(() => {
+    fetchTodos()
+  }, [])
+
+  const fetchTodos = (): void => {
+    getTodos()
+    .then(({ data: { todos } }: ITodo[] | any) => setTodos(todos))
+    .catch((err: Error) => console.log(err))
+  }
+
+ const handleSaveTodo = (e: React.FormEvent, formData: ITodo): void => {
+   e.preventDefault()
+   addTodo(formData)
+   .then(({ status, data }) => {
+    if (status !== 201) {
+      throw new Error('Error! Todo not saved')
+    }
+    setTodos(data.todos)
+  })
+  .catch((err) => console.log(err))
+}
+
+  const handleUpdateTodo = (todo: ITodo): void => {
+    updateTodo(todo)
+    .then(({ status, data }) => {
+        if (status !== 200) {
+          throw new Error('Error! Todo not updated')
+        }
+        setTodos(data.todos)
+      })
+      .catch((err) => console.log(err))
+  }
+
+  const handleDeleteTodo = (_id: string): void => {
+    deleteTodo(_id)
+    .then(({ status, data }) => {
+        if (status !== 200) {
+          throw new Error('Error! Todo not deleted')
+        }
+        setTodos(data.todos)
+      })
+      .catch((err) => console.log(err))
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <main className='App'>
+      <h1>My Todos</h1>
+      <AddTodo saveTodo={handleSaveTodo} />
+      {todos.map((todo: ITodo) => (
+        <TodoItem
+          key={todo._id}
+          updateTodo={handleUpdateTodo}
+          deleteTodo={handleDeleteTodo}
+          todo={todo}
+        />
+      ))}
+    </main>
   )
 }
 

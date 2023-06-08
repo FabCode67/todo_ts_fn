@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 
-const baseUrl = "https://weak-puce-cockatoo-cape.cyclic.app/"
+const baseUrl = "https://weak-puce-cockatoo-cape.cyclic.app"
 
 export const getTodos = async (): Promise<AxiosResponse<ApiDataType>> => {
     try {
