@@ -20,15 +20,20 @@ const StudentForm: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try{
-        const response = await axios.post("https://weak-puce-cockatoo-cape.cyclic.app/add-todo", formData);   
-        console.log(response) 
+    try {
+      await axios.post("https://weak-puce-cockatoo-cape.cyclic.app/add-todo", formData);
+      console.log("Student created successfully");
+      // Fetch data again after successful POST request
+      const response = await axios.get("https://weak-puce-cockatoo-cape.cyclic.app/todos");
+      const updatedData = response.data;
+      // Do something with the updated data (e.g., update state in parent component)
+      console.log("Updated data:", updatedData);
+    } catch (error) {
+      console.error("Error creating student:", error);
     }
-    catch(error){
-        console.error("Error fetching students:", error);
-    }
-    console.log(formData); 
   };
+
+
 
   return (
     <div className="max-w-md mx-auto">

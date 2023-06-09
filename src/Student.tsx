@@ -4,6 +4,7 @@ import { CiTrash } from "react-icons/ci";
 import { AiFillEdit } from "react-icons/ai";
 
 interface ITodo {
+    _id: string;
     firstname: string;
     lastname: string;
     email: string;
@@ -26,6 +27,16 @@ const Student: React.FC = () => {
 
         fetchStudents();
     }, []);
+    const handleRemoveTodo = async (id:string) => {
+        console.log(id, "===");
+
+        try{
+         const response = await axios.delete(`https://weak-puce-cockatoo-cape.cyclic.app/delete-todo/${id}`);
+         
+        }catch(error){
+            console.error("Error deleting student:", error);
+        }
+    };
 
     return (
         <div>
@@ -42,14 +53,14 @@ const Student: React.FC = () => {
                 </thead>
 
                 {students.map((student) => (
-                    <tbody className="bg-white divide-y divide-gray-200">
+                    <tbody className="bg-white divide-y divide-gray-200" key={student._id}>
                         <tr>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.firstname}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.lastname}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.email}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.age}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.status ? "true" : "false"}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-o px-1 text-2xl rounded"><AiFillEdit /></button>  <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-o px-1 text-2xl rounded"><CiTrash /></button> </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-o px-1 text-2xl rounded"><AiFillEdit /></button>  <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-o px-1 text-2xl rounded" onClick={()=>handleRemoveTodo(student._id)}><CiTrash /></button> </td>
                         </tr>
                     </tbody>
                 ))}
