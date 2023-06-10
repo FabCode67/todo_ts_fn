@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { CiTrash } from "react-icons/ci";
 import { AiFillEdit } from "react-icons/ai";
+import { useNavigate } from "react-router-dom";
+import {fetchStudents} from "./api/api"
+import { removeStudent } from "./api/api";
 
 interface ITodo {
     _id: string;
@@ -16,33 +18,36 @@ const Student: React.FC = () => {
     const [students, setStudents] = useState<ITodo[]>([]);
 
     useEffect(() => {
-        const fetchStudents = async () => {
-            try {
-                const response = await axios.get("https://weak-puce-cockatoo-cape.cyclic.app/todos");
-                setStudents(response.data.todos);
-            } catch (error) {
-                console.error("Error fetching students:", error);
-            }
+        const fetchStudentData = async () => {
+           const studentData =  await fetchStudents();
+              setStudents(studentData);
         };
-
-        fetchStudents();
+        fetchStudentData();
     }, []);
-    const handleRemoveTodo = async (id:string) => {
-        console.log(id, "===");
 
-        try{
-         const response = await axios.delete(`https://weak-puce-cockatoo-cape.cyclic.app/delete-todo/${id}`);
-         
-        }catch(error){
-            console.error("Error deleting student:", error);
-        }
+    const handleRemoveTodo = async (id:string) => {
+        const newStudents = students.filter((student) => student._id !== id);
+        setStudents(newStudents);
+        await removeStudent(id);
     };
 
+    const handlePassIdinParams = (id:string) => {
+       navigate(`/edit-todo/${id}`)
+    }
+
+
+    const navigate = useNavigate();
+
+    const handleNavigateToAddStudent = () => {
+        navigate("/add");
+    };
+ 
     return (
         <div>
             <table className="w-full h-auto">
                 <thead className="bg-gray-50">
                     <tr>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
@@ -52,21 +57,25 @@ const Student: React.FC = () => {
                     </tr>
                 </thead>
 
-                {students.map((student) => (
+                {students.map((student, index) => (
                     <tbody className="bg-white divide-y divide-gray-200" key={student._id}>
-                        <tr>
+                        <tr className={`${student.status === false ? 'line-through':''}`}>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{index+1}</td> 
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.firstname}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.lastname}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.email}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.age}</td>
                             <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{student.status ? "true" : "false"}</td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-o px-1 text-2xl rounded"><AiFillEdit /></button>  <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-o px-1 text-2xl rounded" onClick={()=>handleRemoveTodo(student._id)}><CiTrash /></button> </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500"> <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-o px-1 text-2xl rounded" onClick={()=>handlePassIdinParams(student._id)}><AiFillEdit /></button>  <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-o px-1 text-2xl rounded" onClick={()=>handleRemoveTodo(student._id)}><CiTrash /></button> </td>
                         </tr>
                     </tbody>
                 ))}
 
             </table>
-            
+            <div className="flex justify-center space-x-20">
+                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={()=>handleNavigateToAddStudent()}>Add Student</button>
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={()=>handleNavigateToAddStudent()}>Clear Student</button>
+                </div>
         </div>
     );
 };

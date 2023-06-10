@@ -1,6 +1,5 @@
 import React from 'react'
 import Student from './Student'
-import StudentForm from './StudentForm'
 
 const App: React.FC = () => {
   
@@ -9,7 +8,6 @@ const App: React.FC = () => {
     <main className='App'>
       <h1>My Todos</h1>
      <Student />
-     <StudentForm />
     </main>
   )
 }

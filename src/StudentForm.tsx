@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { addStudent } from "./api/api";
 
 const StudentForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,29 +18,46 @@ const StudentForm: React.FC = () => {
       [name]: value,
     }));
   };
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      await axios.post("https://weak-puce-cockatoo-cape.cyclic.app/add-todo", formData);
-      console.log("Student created successfully");
-      // Fetch data again after successful POST request
-      const response = await axios.get("https://weak-puce-cockatoo-cape.cyclic.app/todos");
-      const updatedData = response.data;
-      // Do something with the updated data (e.g., update state in parent component)
-      console.log("Updated data:", updatedData);
-    } catch (error) {
-      console.error("Error creating student:", error);
+    const {firstname, lastname, email, password, age} = formData
+
+    if (!firstname || !lastname || !email || !password || !age) {
+      console.error("Missing input values");
+      return;
     }
+
+    try{
+      await addStudent(formData)
+    }catch(error){
+      console.error(error)
+    }
+
+    navigate('/')
+  };
+
+
+  const handleBack = () => {
+    navigate("/");
   };
 
 
 
   return (
+    <>
+    
+    <div className="flex w-full content-center items-center justify-center h-screen bg-gray-200">
+    <div className='felx justify-center items-center ml-10'>
+      <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={handleBack}>
+        BACK
+      </button>
+      </div>
     <div className="max-w-md mx-auto">
       <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="firstname">
+        <div className="mb-4 w-full">
+          <label className="block text-gray-700 text-sm font-bold mb-2 w-full" htmlFor="firstname">
             First Name
           </label>
           <input
@@ -95,7 +113,7 @@ const StudentForm: React.FC = () => {
             Age
           </label>
           <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="shadow appearance-none border rounded w-full py-2 px-20 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             type="number"
             name="age"
             id="age"
@@ -113,6 +131,8 @@ const StudentForm: React.FC = () => {
         </div>
       </form>
     </div>
+    </div>
+    </>
   );
 };
 
