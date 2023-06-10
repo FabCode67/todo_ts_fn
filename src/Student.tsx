@@ -4,6 +4,7 @@ import { AiFillEdit } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import {fetchStudents} from "./api/api"
 import { removeStudent } from "./api/api";
+import { clearStudent } from "./api/api";
 
 interface ITodo {
     _id: string;
@@ -34,6 +35,12 @@ const Student: React.FC = () => {
     const handlePassIdinParams = (id:string) => {
        navigate(`/edit-todo/${id}`)
     }
+
+    const handleClear = async () => {
+        const newStudents = students.filter((student) => student.status !== true);
+        setStudents(newStudents);
+        await clearStudent();
+    };
 
 
     const navigate = useNavigate();
@@ -74,7 +81,7 @@ const Student: React.FC = () => {
             </table>
             <div className="flex justify-center space-x-20">
                 <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" onClick={()=>handleNavigateToAddStudent()}>Add Student</button>
-                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={()=>handleNavigateToAddStudent()}>Clear Student</button>
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onClick={()=>handleClear()}>Clear Student</button>
                 </div>
         </div>
     );

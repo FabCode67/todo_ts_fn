@@ -47,3 +47,12 @@ export const fetchStudent = async (id: string) => {
     return [];
   }
 }
+
+export const clearStudent = async () => {
+  try {
+    const response = await axios.delete(`${baseUrl}/clear-todos`);
+    return response.data;
+  } catch (error) {
+    console.error("Error clearing students:", error);
+  }
+}
